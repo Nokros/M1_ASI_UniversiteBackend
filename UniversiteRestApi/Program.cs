@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UniversiteDomain.DataAdapters.DataAdaptersFactory;
+using UniversiteDomain.JeuxDeDonnees;
 using UniversiteEFDataProvider.Data;
 using UniversiteEFDataProvider.Entities;
 using UniversiteEFDataProvider.RepositoryFactories;
+//using UniversiteEFDataProvider.SeedingBuilders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,12 +30,13 @@ builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 
 // Sécurisation
 builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme);
 builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
     .AddCookie(IdentityConstants.ApplicationScheme)
     .AddBearerToken(IdentityConstants.BearerScheme);
 
 builder.Services.AddIdentityCore<UniversiteUser>()
-    .AddRoles<IdentityRole>()
+    .AddRoles<UniversiteRole>()
     .AddEntityFrameworkStores<UniversiteDbContext>() // Ici, on stocke les users dans la même bd que le reste
     .AddApiEndpoints();
 
@@ -46,10 +49,28 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.MapControllers();
 
+app.UseCors(policy =>
+        policy.WithOrigins("http://localhost:5173") // Allow requests from the frontend (adjust as needed)
+            .AllowAnyMethod()  // Allow any HTTP methods (GET, POST, etc.)
+            .AllowAnyHeader()  // Allow any headers in the request
+);
+
 // Configuration de Swagger.
 // Commentez les deux lignes ci-dessous pour désactiver Swagger (en production par exemple)
 app.UseSwagger();
 app.UseSwaggerUI();
+
+// Initisation de la base de données
+ILogger logger = app.Services.GetRequiredService<ILogger<BdBuilder>>();
+logger.LogInformation("Chargement des données de test");
+using(var scope = app.Services.CreateScope())
+{
+    UniversiteDbContext context = scope.ServiceProvider.GetRequiredService<UniversiteDbContext>();
+    IRepositoryFactory repositoryFactory = scope.ServiceProvider.GetRequiredService<IRepositoryFactory>();   
+    // C'est ici que vous changez le jeu de données pour démarrer sur une base vide par exemple
+    BdBuilder seedBD = new BasicBdBuilder(repositoryFactory);
+    await seedBD.BuildUniversiteBdAsync();
+}
 
 // Sécurisation
 app.UseAuthorization();
