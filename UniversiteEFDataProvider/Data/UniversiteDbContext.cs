@@ -8,20 +8,20 @@ namespace UniversiteEFDataProvider.Data;
  
 public class UniversiteDbContext : IdentityDbContext<UniversiteUser>
 {
-    public static readonly ILoggerFactory consoleLogger = LoggerFactory.Create(builder => { builder.AddConsole(); });
+    public static readonly ILoggerFactory ConsoleLogger = LoggerFactory.Create(builder => { builder.AddConsole(); });
     
     public UniversiteDbContext(DbContextOptions<UniversiteDbContext> options)
         : base(options)
     {
     }
  
-    public UniversiteDbContext():base()
+    public UniversiteDbContext()
     {
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseLoggerFactory(consoleLogger)  //on lie le contexte avec le système de journalisation
+        optionsBuilder.UseLoggerFactory(ConsoleLogger)  //on lie le contexte avec le système de journalisation
             .EnableSensitiveDataLogging() 
             .EnableDetailedErrors();
     }

@@ -10,7 +10,7 @@ using UniversiteDomain.UseCases.ParcoursUseCases.Get;
 using UniversiteDomain.UseCases.ParcoursUseCases.Update;
 using UniversiteDomain.UseCases.SecurityUseCases.Get;
 
-namespace UniversiteRestApi.Controllers
+namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

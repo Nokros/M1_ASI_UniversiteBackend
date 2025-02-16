@@ -7,10 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="UseCases\NotesUseCases\Delete\" />
-      <Folder Include="UseCases\NotesUseCases\Get\" />
-      <Folder Include="UseCases\NotesUseCases\Update\" />
       <Folder Include="UseCases\ParcoursUseCases\Update\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CsvHelper" Version="33.0.1" />
     </ItemGroup>
 
 </Project>

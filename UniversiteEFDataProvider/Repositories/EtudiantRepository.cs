@@ -24,12 +24,12 @@ public class EtudiantRepository(UniversiteDbContext context) : Repository<Etudia
     }
 
     /* ------ Normal Version ------*/
-    public async Task<Etudiant> AddNoteAsync(long Idetudiant, long Idnote)
+    public async Task<Etudiant> AddNoteAsync(long idEtudiant, long idNote)
     {
         ArgumentNullException.ThrowIfNull(Context.Etudiants);
         ArgumentNullException.ThrowIfNull(Context.Notes);
-        Etudiant e = (await Context.Etudiants.FindAsync(Idetudiant))!;
-        Notes n = (await Context.Notes.FindAsync(Idnote))!;
+        Etudiant e = (await Context.Etudiants.FindAsync(idEtudiant))!;
+        Notes n = (await Context.Notes.FindAsync(idNote))!;
         e.NotesObtenues.Add(n);
         await Context.SaveChangesAsync();
         return e;
@@ -42,15 +42,15 @@ public class EtudiantRepository(UniversiteDbContext context) : Repository<Etudia
     
     /* ------ Lists Version ------*/
 
-    public async Task<Etudiant> AddNoteAsync(long IdEtudiant, long[] IdNotes)
+    public async Task<Etudiant> AddNoteAsync(long idEtudiant, long[] idNotes)
     {
         ArgumentNullException.ThrowIfNull(Context.Etudiants);
         ArgumentNullException.ThrowIfNull(Context.Notes);
 
-        Etudiant e = (await Context.Etudiants.FindAsync(IdEtudiant))!;
+        Etudiant e = (await Context.Etudiants.FindAsync(idEtudiant))!;
         List<Notes> notes = new List<Notes>();
 
-        foreach (var id in IdNotes)
+        foreach (var id in idNotes)
         {
             Notes note = (await Context.Notes.FindAsync(id))!;
             notes.Add(note);
@@ -77,15 +77,10 @@ public class EtudiantRepository(UniversiteDbContext context) : Repository<Etudia
     {
         ArgumentNullException.ThrowIfNull(Context.Etudiants);
         return await Context.Etudiants.Include(e => e.ParcoursSuivi)
-            .ThenInclude(p => p.UesEnseignees)
+            .ThenInclude(p => p!.UesEnseignees)
             .Include(e => e.NotesObtenues)
             .ThenInclude(n => n.Ue)
             .Where(e => e.ParcoursSuivi.UesEnseignees.Any(n => n.NumeroUe == numUe))
             .ToListAsync();
-        /*  Recherche seulement les etudiants avec des notes dans l'ue
-        return await Context.Etudiants.Include(e => e.NotesObtenues)
-            .ThenInclude(n => n.Ue)
-            .Where(e => e.NotesObtenues.Any(n => n.Ue.NumeroUe == numUe))
-            .ToListAsync();*/
     }
 }

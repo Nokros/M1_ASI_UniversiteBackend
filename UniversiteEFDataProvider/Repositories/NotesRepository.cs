@@ -23,4 +23,9 @@ public class NotesRepository(UniversiteDbContext context) : Repository<Notes>(co
     {
         await AffecterEtudiantUeAsync(note.Id,etudiant.Id, ues.Id); 
     }
+
+    public Task<Notes?> FindNotesCompletAsync(long idNote)
+    {
+        throw new NotImplementedException();
+    }
 }

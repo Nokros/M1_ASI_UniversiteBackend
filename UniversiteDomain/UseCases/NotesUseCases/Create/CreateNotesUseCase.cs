@@ -1,46 +1,67 @@
-using UniversiteDomain.DataAdapters;
 using UniversiteDomain.DataAdapters.DataAdaptersFactory;
 using UniversiteDomain.Entities;
-using UniversiteDomain.Exceptions.EtudiantExceptions;
-using UniversiteDomain.Exceptions.NotesException;
 using UniversiteDomain.Exceptions.UeExceptions;
 
 namespace UniversiteDomain.UseCases.NotesUseCases.Create;
 
-public class CreateNotesUseCase(IRepositoryFactory repositoryFactory)
+public class CreateNotesUseCase(IRepositoryFactory factory)
 {
-    public async Task<Notes> ExecuteAsync(long EtudiantId, long UeId, float valeur)
+    public async Task<byte[]> ExecuteAsync(string NumeroUE)
     {
-        List<Ue> ue = await repositoryFactory.UeRepository().FindByConditionAsync(e=>e.Id.Equals(UeId));
-        if (ue is { Count: 0 }) throw new UeNotFoundException(UeId.ToString());
+        await CheckBusinessRules();
+        var ue = await factory.UeRepository().FindByConditionAsync(e => e.NumeroUe == NumeroUE);
+        if (ue is { Count: 0 }) throw new UeNotFoundException(NumeroUE);
         
-        List<Etudiant> etudiant = await repositoryFactory.EtudiantRepository().FindByConditionAsync(e => e.Id.Equals(EtudiantId));
-        if (etudiant is { Count: 0 }) throw new EtudiantNotFoundException(EtudiantId.ToString());
+        var etudiants = await factory.EtudiantRepository().FindEtudiantsByNumUeAsync(NumeroUE);
         
-        var note = new Notes{ EtudiantId = EtudiantId, UeId = UeId,  Valeur = valeur, Etudiant = etudiant[0] , Ue = ue[0]};
-        return await ExecuteAsync(note);
-    }
-    public async Task<Notes> ExecuteAsync(Notes note)
-    {
-        await CheckBusinessRules(note);
-        Notes et = await repositoryFactory.NotesRepository().CreateAsync(note);
-        repositoryFactory.NotesRepository().SaveChangesAsync().Wait();
-        return et;
+        using var stream = new MemoryStream();
+        using var writer = new StreamWriter(stream);
+        using var csv = new CsvHelper.CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture);
+        
+        // Écriture des colonnes
+        csv.WriteField("NumEtud");
+        csv.WriteField("Nom");
+        csv.WriteField("Prenom");
+        csv.WriteField("NumeroUe");
+        csv.WriteField("Intitule");
+        csv.WriteField("Note");
+        csv.NextRecord();
+
+        foreach (var etudiant in etudiants)
+        {
+            csv.WriteField(etudiant.NumEtud);
+            csv.WriteField(etudiant.Nom);
+            csv.WriteField(etudiant.Prenom);
+            csv.WriteField(ue[0].NumeroUe);
+            csv.WriteField(ue[0].Intitule);
+            var note = etudiant.NotesObtenues.FirstOrDefault(e => e.Ue != null 
+                                                                        && e.Ue.NumeroUe == NumeroUE)?.Valeur;
+            
+            csv.WriteField(note.HasValue ? note.Value.ToString() : ""); 
+            //Console.WriteLine($"Entering the student {etudiant.Nom} {etudiant.Prenom}");
+            csv.NextRecord();
+        }
+        
+        writer.Flush();
+        stream.Seek(0, SeekOrigin.Begin);
+        return stream.ToArray();
+    
     }
 
-    private async Task CheckBusinessRules(Notes note)
+    private async Task CheckBusinessRules()
     {
-        ArgumentNullException.ThrowIfNull(note);
-        ArgumentNullException.ThrowIfNull(note.Valeur);
-        ArgumentNullException.ThrowIfNull(note.EtudiantId);
-        ArgumentNullException.ThrowIfNull(note.UeId);
-        ArgumentNullException.ThrowIfNull(note.Etudiant);
-        ArgumentNullException.ThrowIfNull(note.Ue);
-        ArgumentNullException.ThrowIfNull(repositoryFactory);
-        
-        
-        // Valeur note entre 0 et 20
-        if (note.Valeur < 0 || note.Valeur > 20) throw new InvalidValueNoteException(note.Valeur + " n'est pas entre 0 et 20");
-        
+        ArgumentNullException.ThrowIfNull(factory);
+        ArgumentNullException.ThrowIfNull(factory.UeRepository);
+        ArgumentNullException.ThrowIfNull(factory.EtudiantRepository);
+    }
+    
+    public bool IsAuthorized(string role)
+    {
+        return role.Equals(Roles.Scolarite);
+    }
+
+    public async Task ExecuteAsync(long noteEtudiantId, long noteUeId, float noteValeur)
+    {
+        throw new NotImplementedException();
     }
 }

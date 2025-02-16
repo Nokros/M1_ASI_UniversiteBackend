@@ -9,7 +9,7 @@ using UniversiteDomain.UseCases.UeUseCases.Delete;
 using UniversiteDomain.UseCases.UeUseCases.Get;
 using UniversiteDomain.UseCases.UeUseCases.Update;
 
-namespace UniversiteRestApi.Controllers
+namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

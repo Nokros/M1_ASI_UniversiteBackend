@@ -1,4 +1,3 @@
-
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using UniversiteDomain.DataAdapters.DataAdaptersFactory;
@@ -14,7 +13,7 @@ using UniversiteDomain.UseCases.SecurityUseCases.Get;
 using UniversiteDomain.UseCases.SecurityUseCases.Update;
 using UniversiteEFDataProvider.Entities;
 
-namespace UniversiteRestApi.Controllers
+namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
