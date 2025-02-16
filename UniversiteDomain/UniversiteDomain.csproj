@@ -7,8 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="UseCases\EtudiantUseCases\Delete\" />
-      <Folder Include="UseCases\EtudiantUseCases\Get\" />
       <Folder Include="UseCases\EtudiantUseCases\Update\" />
       <Folder Include="UseCases\NotesUseCases\Delete\" />
       <Folder Include="UseCases\NotesUseCases\Get\" />
@@ -16,6 +14,8 @@
       <Folder Include="UseCases\ParcoursUseCases\Delete\" />
       <Folder Include="UseCases\ParcoursUseCases\Get\" />
       <Folder Include="UseCases\ParcoursUseCases\Update\" />
+      <Folder Include="UseCases\SecurityUseCases\Delete\" />
+      <Folder Include="UseCases\SecurityUseCases\Update\" />
       <Folder Include="UseCases\UeUseCases\Delete\" />
       <Folder Include="UseCases\UeUseCases\Get\" />
       <Folder Include="UseCases\UeUseCases\Update\" />
