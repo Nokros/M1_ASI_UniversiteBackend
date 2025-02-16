@@ -2,28 +2,32 @@ using UniversiteDomain.Entities;
 
 namespace UniversiteDomain.Dtos;
 
-public class UeDto
+public class UeCompletDto
 {
     public long Id { get; set; }
     public string NumeroUe { get; set; }
     public string Intitule { get; set; }
+    
+    public List<ParcoursDto> Parcourses { get; set; }
+    
+    public List<NoteAvecEtudiantDto> NoteAvecEtudiants { get; set; }
 
-    public UeDto ToDto(Ue ue)
+    public UeCompletDto ToDto(Ue ue)
     {
         this.Id = ue.Id;
         this.NumeroUe = ue.NumeroUe;
         this.Intitule = ue.Intitule;
-        return this;
-    }
-    
-    public static List<UeDto> ToDtos(List<Ue> Ues)
-    {
-        List<UeDto> dtos = new();
-        foreach (var ue in Ues)
+        if (ue.EnseigneeDans != null)
         {
-            dtos.Add(new UeDto().ToDto(ue));
+            this.Parcourses = ParcoursDto.ToDtos(ue.EnseigneeDans);
         }
-        return dtos;
+
+        if (ue.Notes != null)
+        {
+            this.NoteAvecEtudiants = NoteAvecEtudiantDto.ToDtos(ue.Notes);
+        }
+
+        return this;
     }
     
     public Ue ToEntity()

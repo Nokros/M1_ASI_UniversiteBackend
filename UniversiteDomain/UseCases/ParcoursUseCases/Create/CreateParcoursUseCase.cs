@@ -34,4 +34,9 @@ public class CreateParcoursUseCase(IRepositoryFactory factoryRepository)
         if (existe .Any()) throw new DuplicateInscriptionException(parcours.NomParcours+ " - ce numéro d'étudiant est déjà affecté à un étudiant");
 
     }  
+    
+    public bool IsAuthorized(string role)
+    {
+        return role.Equals(Roles.Responsable) || role.Equals(Roles.Scolarite);
+    }
 }

@@ -35,4 +35,9 @@ public class CreateUeUseCase(IRepositoryFactory factoryRepository)
         if (ue.Intitule.Length < 3) throw new InvalidUeIntituleException(ue.Intitule +" incorrect - L'intitule doit contenir plus de 3 caractères");
         
     }    
+    
+    public bool IsAuthorized(string role)
+    {
+        return role.Equals(Roles.Responsable) || role.Equals(Roles.Scolarite);
+    }
 }

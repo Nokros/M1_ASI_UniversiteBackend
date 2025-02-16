@@ -23,7 +23,12 @@ public class UeRepository(UniversiteDbContext context) : Repository<Ue>(context)
     {
         return await AddNoteAsync(ue.Id, note.Id);
     }
-    
+
+    public Task<Ue> AddNoteAsync(Ue? ue, List<Notes> notes)
+    {
+        throw new NotImplementedException();
+    }
+
     /* ------ Lists Version ------*/
 
     public async Task<Ue> AddNoteAsync(long Idue, long[] Idnote)
@@ -45,7 +50,7 @@ public class UeRepository(UniversiteDbContext context) : Repository<Ue>(context)
         return e;
     }
     
-    public async Task<Ue> AddNoteAsync(Ue? ue, List<Notes> notes)
+    public async Task<Ue> AddNotesAsync(Ue? ue, List<Notes> notes)
     {
         long[] noteIds = notes.Select(n => n.Id).ToArray();
         return await AddNoteAsync(ue.Id, noteIds);
